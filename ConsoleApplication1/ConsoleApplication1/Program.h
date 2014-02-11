@@ -1,4 +1,7 @@
 #pragma once
+
+#include "FreeImage.h" 
+
 class Program
 {
 public:
@@ -6,5 +9,6 @@ public:
 	Program(Program *p);
 	~Program();
 	void run();
+	void grayScale(FIBITMAP * dib);
 };
 
