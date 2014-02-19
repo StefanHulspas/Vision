@@ -1,8 +1,24 @@
-﻿Build started 2/11/2014 2:51:25 PM.
+﻿Build started 2/18/2014 12:52:16 PM.
      1>Project "C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\ConsoleApplication1\ConsoleApplication1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\ConsoleApplication1\/Library" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\ConsoleApplication1.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Program.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\ConsoleApplication1\/Library" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\ConsoleApplication1.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ConsoleApplication1.cpp Program.cpp
          Program.cpp
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(167): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(168): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(169): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(241): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(254): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(255): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(256): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(267): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(268): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(269): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(289): warning C4018: '<=' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(291): warning C4018: '<=' : signed/unsigned mismatch
+         Generating Code...
+         Compiling...
+         ConsoleApplication1.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\Debug\ConsoleApplication1.exe" /INCREMENTAL /NOLOGO FreeImage.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\Debug\ConsoleApplication1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\Debug\ConsoleApplication1.lib" /MACHINE:X86 Debug\ConsoleApplication1.obj
          Debug\Program.obj
@@ -12,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.60
+Time Elapsed 00:00:01.26
