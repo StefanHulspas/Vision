@@ -22,5 +22,7 @@ public:
 	int equalize(FIBITMAP * dib, double * histo, int size, int total);
 	void saltAndPepper(FIBITMAP * dib, int percentage);
 	void meanFilter(FIBITMAP * dib, int medianSize);
+	void medianFilter(FIBITMAP * dib, int medianSize);
+	int * sortArray(int * colorArray, int medianSize);
 };
 

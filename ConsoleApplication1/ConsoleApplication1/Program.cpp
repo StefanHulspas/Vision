@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Program.h"
+#include <ctime>
 
 #define DIR = "ChangedPics/"
 
@@ -19,6 +20,7 @@ Program::~Program()
 
 void Program::run()
 {
+	srand(time(0));
 	string fileName = "";
 	string fileExt = "";
 	cout << "Please enter file name:";
@@ -68,11 +70,20 @@ void Program::run()
 	string Salt = dir + "noise_" + fileName;
 	FreeImage_Save(format, noiseDip, Salt.c_str());
 
+	FIBITMAP * medianDip = FreeImage_Clone(noiseDip);
+	medianFilter(medianDip, 5);
+	string Median = dir + "median_" + fileName;
+	FreeImage_Save(format, medianDip, Median.c_str());
+
 	FIBITMAP * meanDip = FreeImage_Clone(noiseDip);
 	meanFilter(meanDip, 5);
-	string Median = dir + "median_" + fileName;
-	FreeImage_Save(format, meanDip, Median.c_str());
+	string Mean = dir + "mean_" + fileName;
+	FreeImage_Save(format, meanDip, Mean.c_str());
 
+
+	FreeImage_Unload(noiseDip);
+	FreeImage_Unload(meanDip);
+	FreeImage_Unload(medianDip);
 	FreeImage_Unload(dib);
 	cin.ignore(std::numeric_limits <std::streamsize> ::max(), '\n');
 }
@@ -331,4 +342,86 @@ void Program::meanFilter(FIBITMAP * dib, int medianSize){
 			originalBits += pitch;
 		}
 	}
+}
+
+void Program::medianFilter(FIBITMAP * dib, int medianSize){
+	unsigned width = FreeImage_GetWidth(dib);
+	unsigned height = FreeImage_GetHeight(dib);
+	unsigned pitch = FreeImage_GetPitch(dib);
+	int* convolutieRed = new int[medianSize * medianSize];
+	int* convolutieBlue = new int[medianSize * medianSize];
+	int* convolutieGreen = new int[medianSize * medianSize];
+
+	FIBITMAP * original = FreeImage_Clone(dib);
+
+	FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(dib);
+	unsigned int x, y, i;
+	if ((image_type == FIT_BITMAP)) {
+		int aantalWaardes = 4;
+		if (FreeImage_GetBPP(dib) == 24) aantalWaardes--;
+		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
+		BYTE *originalBits = (BYTE*)FreeImage_GetBits(original);
+
+		for (y = 0; y < height - (medianSize - 1); y++) {
+			BYTE *pixel = (BYTE*)bits;
+			BYTE *originalPixel = (BYTE*)originalBits;
+			int collum = 0;
+			int plaats = medianSize * (medianSize - 1);
+			for (x = 0; x < (medianSize * (medianSize - 1)); x++) {
+				if (x % medianSize == 0 && x != 0) collum++;
+				int pixelPlaats = collum * aantalWaardes + (x % medianSize) * width * aantalWaardes;
+				convolutieRed[x] = originalPixel[pixelPlaats + FI_RGBA_RED];
+				convolutieGreen[x] = originalPixel[pixelPlaats + FI_RGBA_GREEN];
+				convolutieBlue[x] = originalPixel[pixelPlaats + FI_RGBA_BLUE];
+				convolutieRed[x] = convolutieRed[x];
+				convolutieGreen[x] = convolutieGreen[x];
+				convolutieBlue[x] = convolutieBlue[x];
+			}
+			for (x = 0; x < width - (medianSize - 1); x++){
+				for (i = 0; i < medianSize; i++) {
+					int pixelPlaats = (x + medianSize - 1) * aantalWaardes + i * width * aantalWaardes;
+					convolutieRed[plaats + i] = originalPixel[pixelPlaats + FI_RGBA_RED];
+					convolutieGreen[plaats + i] = originalPixel[pixelPlaats + FI_RGBA_GREEN];
+					convolutieBlue[plaats + i] = originalPixel[pixelPlaats + FI_RGBA_BLUE];
+				}
+				plaats += medianSize;
+				plaats %= medianSize * medianSize;
+				
+				int * sortedArrayRed = sortArray(convolutieRed, medianSize);
+				int * sortedArrayGreen = sortArray(convolutieGreen, medianSize);
+				int * sortedArrayBlue = sortArray(convolutieBlue, medianSize);
+
+				int pixelPlaats = ((x + (medianSize - 1) / 2) * aantalWaardes + (((medianSize - 1) / 2) * width * aantalWaardes));
+				pixel[pixelPlaats + FI_RGBA_RED] = sortedArrayRed[(medianSize*medianSize - 1) / 2];
+				pixel[pixelPlaats + FI_RGBA_GREEN] = sortedArrayGreen[(medianSize*medianSize - 1) / 2];
+				pixel[pixelPlaats + FI_RGBA_BLUE] = sortedArrayBlue[(medianSize*medianSize - 1) / 2];
+
+			}
+			bits += pitch;
+			originalBits += pitch;
+		}
+	}
+}
+
+int * Program::sortArray(int * data, int medianSize) {
+	int * sortedData = new int[medianSize * medianSize];
+	int tmp;
+	for (int i = 0; i < medianSize * medianSize; i++) {
+		sortedData[i] = data[i];
+	}
+	for (int i = 0; i < medianSize * medianSize; i++) {
+		for (int j = i + 1; j < medianSize * medianSize; j++) {
+
+			if (sortedData[i] > sortedData[j])
+			{
+				tmp = sortedData[i];
+				sortedData[i] = sortedData[j];
+				sortedData[j] = tmp;
+			}
+		}
+	}
+	for (int i = 0; i < medianSize * medianSize; i++) {
+		sortedData[i] = sortedData[i];
+	}
+	return sortedData;
 }

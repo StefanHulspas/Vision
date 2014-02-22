@@ -1,20 +1,23 @@
-﻿Build started 2/22/2014 4:03:23 PM.
+﻿Build started 2/22/2014 4:51:23 PM.
      1>Project "C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\ConsoleApplication1\ConsoleApplication1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\ConsoleApplication1\/Library" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\ConsoleApplication1.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Program.cpp
          Program.cpp
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(113): warning C4101: 'roodTemp' : unreferenced local variable
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(114): warning C4101: 'groenTemp' : unreferenced local variable
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(151): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(152): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(153): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(213): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(228): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(229): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(230): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(300): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(23): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(124): warning C4101: 'roodTemp' : unreferenced local variable
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(125): warning C4101: 'groenTemp' : unreferenced local variable
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(162): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(163): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(164): warning C4244: '=' : conversion from 'float' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(224): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(239): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(240): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(241): warning C4244: '=' : conversion from 'double' to 'BYTE', possible loss of data
      1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(311): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(320): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(322): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(331): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(370): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\stefan\documents\visual studio 2013\projects\consoleapplication1\consoleapplication1\program.cpp(381): warning C4018: '<' : signed/unsigned mismatch
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\Debug\ConsoleApplication1.exe" /INCREMENTAL /NOLOGO FreeImage.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\Debug\ConsoleApplication1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Stefan\Documents\Visual Studio 2013\Projects\ConsoleApplication1\Debug\ConsoleApplication1.lib" /MACHINE:X86 Debug\ConsoleApplication1.obj
          Debug\Program.obj
@@ -24,4 +27,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.68
+Time Elapsed 00:00:00.69
