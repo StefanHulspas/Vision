@@ -36,9 +36,10 @@ void Program::run()
 		cout << "Unknown format!\n >>ERROR<<";
 		return;
 	}
-
+	
 	FIBITMAP *dib = FreeImage_Load(format, fileName.c_str());
 	int totalPixels = FreeImage_GetWidth(dib) * FreeImage_GetHeight(dib);
+	/*
 	FIBITMAP * greyDib = FreeImage_Clone(dib);
 	if (grayScale(greyDib) == 0) {
 		string grey = dir + "grey_" + fileName;
@@ -58,12 +59,19 @@ void Program::run()
 		FreeImage_Unload(equaDib);
 	}
 	FreeImage_Unload(greyDib);
+	*/
 
 	//week 2
+
 	FIBITMAP * noiseDip = FreeImage_Clone(dib);
 	saltAndPepper(noiseDip, 2);
 	string Salt = dir + "noise_" + fileName;
-	FreeImage_Save(FIF_JPEG, noiseDip, Salt.c_str(), JPEG_DEFAULT);
+	FreeImage_Save(format, noiseDip, Salt.c_str());
+
+	FIBITMAP * meanDip = FreeImage_Clone(noiseDip);
+	meanFilter(meanDip, 5);
+	string Median = dir + "median_" + fileName;
+	FreeImage_Save(format, meanDip, Median.c_str());
 
 	FreeImage_Unload(dib);
 	cin.ignore(std::numeric_limits <std::streamsize> ::max(), '\n');
@@ -105,22 +113,9 @@ int Program::grayScale(FIBITMAP * dib) {
 	BYTE roodTemp;
 	BYTE groenTemp;
 	unsigned int x, y;
-	if (image_type == FIT_RGBF) {
-		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
-		for (y = 0; y < height; y++) {
-			FIRGBF *pixel = (FIRGBF*)bits;
-			for (x = 0; x < width; x++) {
-				roodTemp = (BYTE)pixel[x].red;
-				groenTemp = (BYTE)pixel[x].green;
-				pixel[x].red = (float)(roodTemp * 0.30 + groenTemp * 0.59 + pixel[x].blue * 0.11);
-				pixel[x].green = (float)(roodTemp * 0.30 + groenTemp * 0.59 + pixel[x].blue * 0.11);
-				pixel[x].blue = (float)(roodTemp * 0.30 + groenTemp * 0.59 + pixel[x].blue * 0.11);
-			}
-			// next line
-			bits += pitch;
-		}
-	}
-	else if ((image_type == FIT_BITMAP) && (FreeImage_GetBPP(dib) == 24)) {
+	if (image_type == FIT_BITMAP) {
+		int aantalWaardes = 4;
+		if (FreeImage_GetBPP(dib) == 24) aantalWaardes--;
 		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
 		for (y = 0; y < height; y++) {
 			BYTE *pixel = (BYTE*)bits;
@@ -130,7 +125,7 @@ int Program::grayScale(FIBITMAP * dib) {
 				pixel[FI_RGBA_RED] = (BYTE)(roodTemp * 0.30 + groenTemp * 0.59 + pixel[FI_RGBA_BLUE] * 0.11);
 				pixel[FI_RGBA_GREEN] = (BYTE)(roodTemp * 0.30 + groenTemp * 0.59 + pixel[FI_RGBA_BLUE] * 0.11);
 				pixel[FI_RGBA_BLUE] = (BYTE)(roodTemp * 0.30 + groenTemp * 0.59 + pixel[FI_RGBA_BLUE] * 0.11);
-				pixel += 3;
+				pixel += aantalWaardes;
 			}
 			// next line
 			bits += pitch;
@@ -146,20 +141,9 @@ int Program::manipulateColors(FIBITMAP * dib, float rood, float groen, float bla
 	unsigned pitch = FreeImage_GetPitch(dib);
 	FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(dib);
 	unsigned int x, y;
-	if (image_type == FIT_RGBF) {
-		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
-		for (y = 0; y < height; y++) {
-			FIRGBF *pixel = (FIRGBF*)bits;
-			for (x = 0; x < width; x++) {
-				pixel[x].red = pixel[x].red * rood;
-				pixel[x].green = pixel[x].green * groen;
-				pixel[x].blue = pixel[x].blue * blauw;
-			}
-			// next line
-			bits += pitch;
-		}
-	}
-	else if ((image_type == FIT_BITMAP) && (FreeImage_GetBPP(dib) == 24)) {
+	if (image_type == FIT_BITMAP) {
+		int aantalWaardes = 4;
+		if (FreeImage_GetBPP(dib) == 24) aantalWaardes--;
 		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
 		for (y = 0; y < height; y++) {
 			BYTE *pixel = (BYTE*)bits;
@@ -167,7 +151,7 @@ int Program::manipulateColors(FIBITMAP * dib, float rood, float groen, float bla
 				pixel[FI_RGBA_RED] = pixel[FI_RGBA_RED] * rood;
 				pixel[FI_RGBA_GREEN] = pixel[FI_RGBA_GREEN] * groen;
 				pixel[FI_RGBA_BLUE] = pixel[FI_RGBA_BLUE] * blauw;
-				pixel += 3;
+				pixel += aantalWaardes;
 			}
 			// next line
 			bits += pitch;
@@ -194,21 +178,9 @@ double * Program::normalizeHistogram(FIBITMAP * dib, string s, int size) {
 
 	FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(dib);
 	unsigned int x, y;
-	if (image_type == FIT_RGBF) {
-		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
-		for (y = 0; y < height; y++) {
-			FIRGBF *pixel = (FIRGBF*)bits;
-			for (x = 0; x < width; x++) {
-				if (size == 256)
-					histo[(BYTE)pixel[x].red]++;
-				else if (size == 10)
-					histo[(int)((BYTE)pixel[x].red*10/256)]++;
-			}
-			// next line
-			bits += pitch;
-		}
-	}
-	else if ((image_type == FIT_BITMAP) && (FreeImage_GetBPP(dib) == 24)) {
+	if ((image_type == FIT_BITMAP)) {
+		int aantalWaardes = 4;
+		if (FreeImage_GetBPP(dib) == 24) aantalWaardes--;
 		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
 		for (y = 0; y < height; y++) {
 			BYTE *pixel = (BYTE*)bits;
@@ -217,7 +189,7 @@ double * Program::normalizeHistogram(FIBITMAP * dib, string s, int size) {
 					histo[pixel[FI_RGBA_RED]]++;
 				else if (size == 10)
 					histo[(int)(pixel[FI_RGBA_RED] * 10 /256)]++;
-				pixel += 3;
+				pixel += aantalWaardes;
 			}
 			// next line
 			bits += pitch;
@@ -246,20 +218,9 @@ int Program::equalize(FIBITMAP * dib, double * histo, int size, int total) {
 	unsigned pitch = FreeImage_GetPitch(dib);
 	FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(dib);
 	unsigned int x, y;
-	if (image_type == FIT_RGBF) {
-		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
-		for (y = 0; y < height; y++) {
-			FIRGBF *pixel = (FIRGBF*)bits;
-			for (x = 0; x < width; x++) {
-				pixel[x].red = pixel[x].red * histoModified[(BYTE)pixel[x].red];
-				pixel[x].green = pixel[x].green * histoModified[(BYTE)pixel[x].green];
-				pixel[x].blue = pixel[x].blue * histoModified[(BYTE)pixel[x].blue];
-			}
-			// next line
-			bits += pitch;
-		}
-	}
-	else if ((image_type == FIT_BITMAP) && (FreeImage_GetBPP(dib) == 24)) {
+	if ((image_type == FIT_BITMAP)) {
+		int aantalWaardes = 4;
+		if (FreeImage_GetBPP(dib) == 24) aantalWaardes--;
 		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
 		for (y = 0; y < height; y++) {
 			BYTE *pixel = (BYTE*)bits;
@@ -267,7 +228,7 @@ int Program::equalize(FIBITMAP * dib, double * histo, int size, int total) {
 				pixel[FI_RGBA_RED] = histoModified[(BYTE)pixel[FI_RGBA_RED]] * size;
 				pixel[FI_RGBA_GREEN] = histoModified[(BYTE)pixel[FI_RGBA_GREEN]] * size;
 				pixel[FI_RGBA_BLUE] = histoModified[(BYTE)pixel[FI_RGBA_BLUE]] * size;
-				pixel += 3;
+				pixel += aantalWaardes;
 			}
 			// next line
 			bits += pitch;
@@ -285,30 +246,9 @@ void Program::saltAndPepper(FIBITMAP * dib, int percentage){
 
 	int random = 0;
 	unsigned int x, y;
-	if (image_type == FIT_RGBF) {
-		for (int h = 0; h <= height; h++){
-			FIRGBF *pixel = (FIRGBF*)bits;
-			for (int x = 0; x <= width; x++){
-				random = rand() % 100;
-				if (random <= percentage){
-					if (random % 2 == 0){
-						pixel[x].red = 0;
-						pixel[x].green = 0;
-						pixel[x].blue = 0;
-					}
-					else {
-						pixel[x].red = 255;
-						pixel[x].green = 255;
-						pixel[x].blue = 255;
-					}
-				}
-			}
-			bits += pitch;
-		}
-	}
-
-
-	else if ((image_type == FIT_BITMAP) && (FreeImage_GetBPP(dib) == 24)) {
+	if ((image_type == FIT_BITMAP)) {
+		int aantalWaardes = 4;
+		if (FreeImage_GetBPP(dib) == 24) aantalWaardes--;
 		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
 		for (y = 0; y < height; y++) {
 			BYTE *pixel = (BYTE*)bits;
@@ -326,10 +266,69 @@ void Program::saltAndPepper(FIBITMAP * dib, int percentage){
 						pixel[FI_RGBA_BLUE] = 255;
 					}
 				}
-				pixel += 3;
+				pixel += aantalWaardes;
 			}
 			// next line
 			bits += pitch;
+		}
+	}
+}
+
+void Program::meanFilter(FIBITMAP * dib, int medianSize){
+	unsigned width = FreeImage_GetWidth(dib);
+	unsigned height = FreeImage_GetHeight(dib);
+	unsigned pitch = FreeImage_GetPitch(dib);
+	int* convolutieRed = new int[medianSize * medianSize];
+	int* convolutieBlue = new int[medianSize * medianSize];
+	int* convolutieGreen = new int[medianSize * medianSize];
+
+	FIBITMAP * original = FreeImage_Clone(dib);
+
+	FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(dib);
+	unsigned int x, y, i;
+	if ((image_type == FIT_BITMAP)) {
+		int aantalWaardes = 4;
+		if (FreeImage_GetBPP(dib) == 24) aantalWaardes--;
+		BYTE *bits = (BYTE*)FreeImage_GetBits(dib);
+		BYTE *originalBits = (BYTE*)FreeImage_GetBits(original);
+		
+		for (y = 0; y < height - (medianSize - 1); y++) {
+			BYTE *pixel = (BYTE*)bits;
+			BYTE *originalPixel = (BYTE*)originalBits;
+			int collum = 0;
+			int plaats = medianSize * (medianSize - 1);
+			for (x = 0; x < (medianSize * (medianSize - 1)); x++) {
+				if (x % medianSize == 0 && x != 0) collum++;
+				int pixelPlaats = collum * aantalWaardes + (x % medianSize) * width * aantalWaardes;
+				convolutieRed[x] = originalPixel[pixelPlaats + FI_RGBA_RED];
+				convolutieGreen[x] = originalPixel[pixelPlaats + FI_RGBA_GREEN];
+				convolutieBlue[x] = originalPixel[pixelPlaats + FI_RGBA_BLUE];
+				convolutieRed[x] = convolutieRed[x];
+				convolutieGreen[x] = convolutieGreen[x];
+				convolutieBlue[x] = convolutieBlue[x];
+			}
+			for (x = 0; x < width - (medianSize - 1); x++){
+				for (i = 0; i < medianSize; i++) {
+					int pixelPlaats = (x + medianSize - 1) * aantalWaardes + i * width * aantalWaardes;
+					convolutieRed[plaats + i] = originalPixel[pixelPlaats + FI_RGBA_RED];
+					convolutieGreen[plaats + i] = originalPixel[pixelPlaats + FI_RGBA_GREEN];
+					convolutieBlue[plaats + i] = originalPixel[pixelPlaats + FI_RGBA_BLUE];
+				}
+				plaats += medianSize;
+				plaats %= medianSize * medianSize;
+				int totalred = 0, totalgreen = 0, totalblue = 0;
+				for (i = 0; i < medianSize * medianSize; i++){
+					totalred += convolutieRed[i];
+					totalgreen += convolutieGreen[i];
+					totalblue += convolutieBlue[i];
+				}
+				int pixelPlaats = ((x + (medianSize - 1) / 2) * aantalWaardes + (((medianSize - 1) / 2) * width * aantalWaardes));
+				pixel[pixelPlaats + FI_RGBA_RED] = totalred / (medianSize * medianSize);
+				pixel[pixelPlaats + FI_RGBA_GREEN] = totalgreen / (medianSize * medianSize);
+				pixel[pixelPlaats + FI_RGBA_BLUE] = totalblue / (medianSize * medianSize);
+			}
+			bits += pitch;
+			originalBits += pitch;
 		}
 	}
 }

@@ -21,5 +21,6 @@ public:
 	double * normalizeHistogram(FIBITMAP * dib, std::string s, int size);
 	int equalize(FIBITMAP * dib, double * histo, int size, int total);
 	void saltAndPepper(FIBITMAP * dib, int percentage);
+	void meanFilter(FIBITMAP * dib, int medianSize);
 };
 
