@@ -20,14 +20,18 @@ Program::~Program()
 
 void Program::run()
 {
+	//Giving the random function a starting value which is different everytime.
+	//This is done to so the noise picture is different everytime.
 	srand(time(0));
-	string fileName = "";
-	string fileExt = "";
+
+	//Asking for the name of the picture which will serve as the basis for al the functions
+	
 	cout << "Please enter file name:";
 	cin >> fileName;
+
+	//Determining the format of the picture
 	int png = fileName.find(".png");
 	int jpg = fileName.find(".jpg");
-	FREE_IMAGE_FORMAT format;
 	if (png != -1) {
 		format = FIF_PNG;
 	}
@@ -39,29 +43,33 @@ void Program::run()
 		return;
 	}
 	
+
 	FIBITMAP *dib = FreeImage_Load(format, fileName.c_str());
-	int totalPixels = FreeImage_GetWidth(dib) * FreeImage_GetHeight(dib);
-	/*
+	totalPixels = FreeImage_GetWidth(dib) * FreeImage_GetHeight(dib);
+	
+	//Creating a new bitmap which will be turned grey
 	FIBITMAP * greyDib = FreeImage_Clone(dib);
-	if (grayScale(greyDib) == 0) {
-		string grey = dir + "grey_" + fileName;
-		FreeImage_Save(format, greyDib, grey.c_str());
+	grayScale(greyDib);
 
-		
-		double * histo = normalizeHistogram(greyDib, grey, 256);
-		normalizeHistogram(greyDib, grey, 10);
+	//Saving the gray image
+	string grey = dir + "grey_" + fileName;
+	FreeImage_Save(format, greyDib, grey.c_str());
 
-		seperateColors(dib, fileName, format);
+	//Making a normalized histogram of the picture
+	double * histo = normalizeHistogram(greyDib, grey, 256);
+	normalizeHistogram(greyDib, grey, 10);
 
-		FIBITMAP * equaDib = FreeImage_Clone(greyDib);
-		if (equalize(equaDib, histo, 256, totalPixels) == 0) {
-			string equa = dir + "equalized_" + fileName;
-			FreeImage_Save(format, equaDib, equa.c_str());
-		}
-		FreeImage_Unload(equaDib);
-	}
+	seperateColors(dib);
+
+	FIBITMAP * equaDib = FreeImage_Clone(greyDib);
+	equalize(equaDib, histo, 256, totalPixels);
+	string equa = dir + "equalized_" + fileName;
+	FreeImage_Save(format, equaDib, equa.c_str());
+
+	FreeImage_Unload(equaDib);
+	
 	FreeImage_Unload(greyDib);
-	*/
+	
 
 	//week 2
 
@@ -71,52 +79,74 @@ void Program::run()
 	FreeImage_Save(format, noiseDip, Salt.c_str());
 
 	FIBITMAP * medianDip = FreeImage_Clone(noiseDip);
-	medianFilter(medianDip, 5);
+	int medianSize = 11;
+	//Place in the sorted array of pixels
+	int mid = (medianSize*medianSize - 1) / 2;
+	medianFilter(medianDip, medianSize, mid, true);
 	string Median = dir + "median_" + fileName;
 	FreeImage_Save(format, medianDip, Median.c_str());
 
+	/*Applying Minimum Filter to the image with noise*/
+	/*
+	FIBITMAP * medianDipMin = FreeImage_Clone(noiseDip);
+	//Place in the sorted array of pixels
+	int minimum = 0;
+	medianFilter(medianDipMin, medianSize, minimum, true);
+	string MedianMin = dir + "medianMIN_" + fileName;
+	FreeImage_Save(format, medianDipMin, MedianMin.c_str());
+	FreeImage_Unload(medianDipMin);
+	*/
+
+	/*Applying Minimum Filter to the image with noise*/
+	/*
+	FIBITMAP * medianDipMax = FreeImage_Clone(noiseDip);
+	//Place in the sorted array of pixels
+	int maximum = medianSize*medianSize - 1;
+	medianFilter(medianDipMax, medianSize, maximum, true);
+	string MedianMax = dir + "medianMAX_" + fileName;
+	FreeImage_Save(format, medianDipMax, MedianMax.c_str());
+	FreeImage_Unload(medianDipMax);
+	*/
+
 	FIBITMAP * meanDip = FreeImage_Clone(noiseDip);
-	meanFilter(meanDip, 5);
+	meanFilter(meanDip, medianSize);
 	string Mean = dir + "mean_" + fileName;
 	FreeImage_Save(format, meanDip, Mean.c_str());
 
 
 	FreeImage_Unload(noiseDip);
-	FreeImage_Unload(meanDip);
 	FreeImage_Unload(medianDip);
+	FreeImage_Unload(meanDip);
 	FreeImage_Unload(dib);
 	cin.ignore(std::numeric_limits <std::streamsize> ::max(), '\n');
 }
 
-void Program::seperateColors(FIBITMAP * dib, string fileName, FREE_IMAGE_FORMAT format) {
+void Program::seperateColors(FIBITMAP * dib) {
+
 	FIBITMAP * R_Dib = FreeImage_Clone(dib);
-	if (manipulateColors(R_Dib, 1.0f, 0.0f, 0.0f) == 0) {
-		string rood = dir + "R_" + fileName;
-		FreeImage_Save(format, R_Dib, rood.c_str());
-		normalizeHistogram(R_Dib, rood.c_str(), 10);
-	}
-	else cout << "Red Failed\n";
+	manipulateColors(R_Dib, 1.0f, 0.0f, 0.0f);
+	string rood = dir + "R_" + fileName;
+	FreeImage_Save(format, R_Dib, rood.c_str());
+	normalizeHistogram(R_Dib, rood.c_str(), 10);
+
 	FIBITMAP * G_Dib = FreeImage_Clone(dib);
-	if (manipulateColors(G_Dib, 0.0f, 1.0f, 0.0f) == 0) {
-		string groen = dir + "G_" + fileName;
-		FreeImage_Save(format, G_Dib, groen.c_str());
-		normalizeHistogram(G_Dib, groen.c_str(), 10);
-	}
-	else cout << "Green Failed\n";
+	manipulateColors(G_Dib, 0.0f, 1.0f, 0.0f);
+	string groen = dir + "G_" + fileName;
+	FreeImage_Save(format, G_Dib, groen.c_str());
+	normalizeHistogram(G_Dib, groen.c_str(), 10);
+	
 	FIBITMAP * B_Dib = FreeImage_Clone(dib);
-	if (manipulateColors(B_Dib, 0.0f, 0.0f, 1.0f) == 0) {
-		string blauw = dir + "B_" + fileName;
-		FreeImage_Save(format, B_Dib, blauw.c_str());
-		normalizeHistogram(B_Dib, blauw.c_str(), 10);
-	}
-	else cout << "Blue Failed\n";
+	manipulateColors(B_Dib, 0.0f, 0.0f, 1.0f);
+	string blauw = dir + "B_" + fileName;
+	FreeImage_Save(format, B_Dib, blauw.c_str());
+	normalizeHistogram(B_Dib, blauw.c_str(), 10);
 
 	FreeImage_Unload(R_Dib);
 	FreeImage_Unload(G_Dib);
 	FreeImage_Unload(B_Dib);
 }
 
-int Program::grayScale(FIBITMAP * dib) {
+void Program::grayScale(FIBITMAP * dib) {
 	unsigned width = FreeImage_GetWidth(dib);
 	unsigned height = FreeImage_GetHeight(dib);
 	unsigned pitch = FreeImage_GetPitch(dib);
@@ -142,11 +172,9 @@ int Program::grayScale(FIBITMAP * dib) {
 			bits += pitch;
 		}
 	}
-	else return -1;
-	return 0;
 }
 
-int Program::manipulateColors(FIBITMAP * dib, float rood, float groen, float blauw) {
+void Program::manipulateColors(FIBITMAP * dib, float rood, float groen, float blauw) {
 	unsigned width = FreeImage_GetWidth(dib);
 	unsigned height = FreeImage_GetHeight(dib);
 	unsigned pitch = FreeImage_GetPitch(dib);
@@ -168,9 +196,6 @@ int Program::manipulateColors(FIBITMAP * dib, float rood, float groen, float bla
 			bits += pitch;
 		}
 	}
-	else return -1;
-	return 0;
-
 }
 
 double * Program::normalizeHistogram(FIBITMAP * dib, string s, int size) {
@@ -215,8 +240,8 @@ double * Program::normalizeHistogram(FIBITMAP * dib, string s, int size) {
 	return outputHisto;
 }
 
-int Program::equalize(FIBITMAP * dib, double * histo, int size, int total) {
-	if (size != 256) return -1;
+void Program::equalize(FIBITMAP * dib, double * histo, int size, int total) {
+	if (size != 256) return;
 	unsigned int i;
 	double * histoModified = new double[size];
 	histoModified[0] = histo[0];
@@ -245,7 +270,6 @@ int Program::equalize(FIBITMAP * dib, double * histo, int size, int total) {
 			bits += pitch;
 		}
 	}
-	return 0;
 }
 
 void Program::saltAndPepper(FIBITMAP * dib, int percentage){
@@ -344,7 +368,7 @@ void Program::meanFilter(FIBITMAP * dib, int medianSize){
 	}
 }
 
-void Program::medianFilter(FIBITMAP * dib, int medianSize){
+void Program::medianFilter(FIBITMAP * dib, int medianSize, int filterType, bool gray){
 	unsigned width = FreeImage_GetWidth(dib);
 	unsigned height = FreeImage_GetHeight(dib);
 	unsigned pitch = FreeImage_GetPitch(dib);
@@ -387,14 +411,50 @@ void Program::medianFilter(FIBITMAP * dib, int medianSize){
 				plaats += medianSize;
 				plaats %= medianSize * medianSize;
 				
+				/* Our own sorting Method */
 				int * sortedArrayRed = sortArray(convolutieRed, medianSize);
 				int * sortedArrayGreen = sortArray(convolutieGreen, medianSize);
 				int * sortedArrayBlue = sortArray(convolutieBlue, medianSize);
+				
 
+
+				/*Quick Sort method from the internet*/
+				/*
+				int * sortedArrayRed = new int[medianSize * medianSize];
+				int * sortedArrayGreen = new int[medianSize * medianSize];
+				int * sortedArrayBlue = new int[medianSize * medianSize];
+
+				if (gray) {
+					for (int i = 0; i < medianSize * medianSize; i++) {
+						sortedArrayRed[i] = convolutieRed[i];
+					}
+				}
+				else {
+					for (int i = 0; i < medianSize * medianSize; i++) {
+						sortedArrayRed[i] = convolutieRed[i];
+						sortedArrayGreen[i] = convolutieGreen[i];
+						sortedArrayBlue[i] = convolutieBlue[i];
+					}
+				}
+
+				quicksort(sortedArrayRed, 0, medianSize*medianSize - 1);
+				if (!gray) {
+					quicksort(sortedArrayGreen, 0, medianSize*medianSize - 1);
+					quicksort(sortedArrayBlue, 0, medianSize*medianSize - 1);
+				}
+
+				*/
 				int pixelPlaats = ((x + (medianSize - 1) / 2) * aantalWaardes + (((medianSize - 1) / 2) * width * aantalWaardes));
-				pixel[pixelPlaats + FI_RGBA_RED] = sortedArrayRed[(medianSize*medianSize - 1) / 2];
-				pixel[pixelPlaats + FI_RGBA_GREEN] = sortedArrayGreen[(medianSize*medianSize - 1) / 2];
-				pixel[pixelPlaats + FI_RGBA_BLUE] = sortedArrayBlue[(medianSize*medianSize - 1) / 2];
+				if (gray) {
+					pixel[pixelPlaats + FI_RGBA_RED] = sortedArrayRed[filterType];
+					pixel[pixelPlaats + FI_RGBA_GREEN] = sortedArrayRed[filterType];
+					pixel[pixelPlaats + FI_RGBA_BLUE] = sortedArrayRed[filterType];
+				}
+				else {
+					pixel[pixelPlaats + FI_RGBA_RED] = sortedArrayRed[filterType];
+					pixel[pixelPlaats + FI_RGBA_GREEN] = sortedArrayGreen[filterType];
+					pixel[pixelPlaats + FI_RGBA_BLUE] = sortedArrayBlue[filterType];
+				}
 
 			}
 			bits += pitch;
@@ -424,4 +484,39 @@ int * Program::sortArray(int * data, int medianSize) {
 		sortedData[i] = sortedData[i];
 	}
 	return sortedData;
+}
+
+int Program::partition(int* input, int p, int r)
+{
+	int pivot = input[r];
+
+	while (p < r)
+	{
+		while (input[p] < pivot)
+			p++;
+
+		while (input[r] > pivot)
+			r--;
+
+		if (input[p] == input[r])
+			p++;
+		else if (p < r)
+		{
+			int tmp = input[p];
+			input[p] = input[r];
+			input[r] = tmp;
+		}
+	}
+
+	return r;
+}
+
+void Program::quicksort(int* input, int p, int r)
+{
+	if (p < r)
+	{
+		int j = partition(input, p, r);
+		quicksort(input, p, j - 1);
+		quicksort(input, j + 1, r);
+	}
 }
